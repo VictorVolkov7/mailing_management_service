@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "cw-6"
+version = "0.1.0"
+description = ""
+authors = ["Victor Volkov <vektorn1212@gmail.com>"]
+readme = "README.md"
+packages = [{include = "cw_6"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+psycopg2-binary = "^2.9.9"
+pillow = "^10.0.1"
+django = "^4.2.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
