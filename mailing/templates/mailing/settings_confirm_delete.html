@@ -1,0 +1,22 @@
+{% extends 'mailing/base.html' %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-6 mx-auto">
+                <div class="card mb-4 mt-0 center-screen">
+                    <div class="card-header">
+                        <h4>Вы действительно хотите удалить рассылку {{ object.mailing_name }}?</h4>
+                    </div>
+                    <div class="card-body mx-auto">
+                        <form method="post">
+                            {% csrf_token %}
+                            <button class="btn btn-outline-danger" type="submit">Да</button>
+                             &nbsp;&nbsp;&nbsp;&nbsp;
+                            <a href="{% url 'mailing:settings_list' %}" class="btn btn-outline-primary" type="submit">Нет</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

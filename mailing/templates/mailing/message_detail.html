@@ -1,0 +1,19 @@
+{% extends 'mailing/base.html' %}
+{% block content %}
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card transparent-border mb-3">
+                    <div class="card-header mx-auto">
+                        <h5 class="card-title">{{ object.mail_subject }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ object.mail_body }}</p>
+                    </div>
+                    <div class="card-footer d-flex justify-content-center">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
