@@ -1,0 +1,58 @@
+{% extends 'mailing/base.html' %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="card mb-4 mt-5 transparent-border">
+                    <div class="card-header">
+                        {% if object %}
+                            <h4 class="my-0 font-weight-normal">Редактирование рассылки {{ object.mail_subject }}:</h4>
+                        {% else %}
+                            <h4 class="my-0 font-weight-normal">Добавление рассылки:</h4>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            {% if object %}
+                                <button class="btn btn-success" type="submit">Сохранить</button>
+                            {% else %}
+                                <button class="btn btn-success" type="submit">Добавить</button>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            function setFormState() {
+                var selectedValue = $("#id_periodicity").val();
+
+                if (selectedValue === "daily") {
+                    $('#id_preferred_weekday').prop('disabled', true);
+                    $('#id_preferred_day_of_month').prop('disabled', true);
+                } else if (selectedValue === "weekly") {
+                    $('#id_preferred_weekday').prop('disabled', false);
+                    $('#id_preferred_day_of_month').prop('disabled', true);
+                } else if (selectedValue === "monthly") {
+                    $('#id_preferred_weekday').prop('disabled', true);
+                    $('#id_preferred_day_of_month').prop('disabled', false);
+                } else {
+                    $('#id_preferred_weekday').prop('disabled', false);
+                    $('#id_preferred_day_of_month').prop('disabled', false);
+                }
+            }
+
+            // при изменении значения выполняем функцию setFormState
+            $("#id_periodicity").change(setFormState);
+
+            // первоначальная установка состояния формы
+            setFormState();
+        });
+    </script>
+{% endblock %}
