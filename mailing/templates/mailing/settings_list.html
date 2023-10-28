@@ -1,0 +1,105 @@
+{% extends 'mailing/base.html' %}
+{% block content %}
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-8">
+                <div class="col-4">
+                    <a href="{% url 'mailing:settings_create' %}" class="btn btn-outline-primary mb-3">
+                        Добавить рассылку
+                    </a>
+                </div>
+                <div class="row mt-3">
+                    {% for mailing in mailing_list %}
+                        <div class="col-6">
+                            <div class="card mb-3">
+                                <div class="card-header mx-auto">
+                                    {% if mailing.mailing_name %}
+                                        <h5 class="card-title">{{ mailing.mailing_name }}</h5>
+                                    {% else %}
+                                        <h5 class="card-title">Без названия</h5>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text text-center">
+                                        <span class="text-muted">Статус:</span>
+                                        <span>{{ mailing.get_mailing_status_display.lower }}</span>
+                                    </p>
+                                    <p class="card-text text-center">
+                                        <span class="text-muted">Периодичность:</span>
+                                        {% if mailing.periodicity == 'daily' %}
+                                            <span>{{ mailing.get_periodicity_display.lower }}</span>
+                                        {% elif mailing.periodicity == 'weekly' %}
+                                            <span>{{ mailing.get_periodicity_display.lower }}({{ mailing.get_preferred_weekday_display }})</span>
+                                        {% elif mailing.periodicity == 'monthly' %}
+                                            <span>{{ mailing.get_periodicity_display.lower }}({{ mailing.get_preferred_day_of_month_display }} день месяца)</span>
+                                        {% endif %}
+                                    </p>
+                                    <p class="card-text text-center">
+                                        <span class="text-muted">Время отправки:</span>
+                                        <span>{{ mailing.mailing_time_start }}</span>
+                                    </p>
+                                    <p class="card-text text-center">
+                                        <span class="text-muted">Время окончания отправки:</span>
+                                        <span>{{ mailing.mailing_time_end }}</span>
+                                    </p>
+                                    <p class="card-text text-center">
+                                        <span class="text-muted">Сообщение:</span>
+                                        <span>{{ mailing.mailing }}</span>
+                                    </p>
+                                </div>
+                                <div class="card-footer d-flex justify-content-between">
+                                    <a href="{% url 'mailing:settings_detail' mailing.pk %}" type="button"
+                                       class="btn btn-outline-secondary btn-sm">Информация</a>
+                                    {% if mailing.mailing_status == 'created' %}
+                                        <a href="{% url 'mailing:toggle_activity' mailing.pk %}" type="button"
+                                           class="btn btn-outline-success btn-sm">Активировать</a>
+                                    {% elif mailing.mailing_status == 'completed' %}
+                                        <a href="{% url 'mailing:toggle_activity' mailing.pk %}" type="button"
+                                           class="btn btn-outline-success btn-sm">Активировать</a>
+                                    {% else %}
+                                        <a href="{% url 'mailing:toggle_activity' mailing.pk %}" type="button"
+                                           class="btn btn-outline-danger btn-sm">Деактивировать</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="col-12">
+                    <a href="{% url 'mailing:message_create' %}" class="btn btn-outline-primary mb-3">
+                        Добавить сообщение
+                    </a>
+                </div>
+                <div class="row mt-3">
+                    {% for message in message_list %}
+                        <div class="col-12">
+                            <div class="card mb-3">
+                                <div class="card-header mx-auto">
+                                    <h5 class="card-title">{{ message.mail_subject }}</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text text-center">
+                                        <span class="text-muted">Сообщение:</span>
+                                        <span>{{ message.mail_body|slice:50 }}</span>
+                                    </p>
+                                </div>
+                                <div class="card-footer d-flex justify-content-center">
+                                    <div class="btn-group" role="group" aria-label="Basic example">
+                                        <a href="{% url 'mailing:message_update' message.pk %}" type="button"
+                                           class="btn btn-outline-secondary btn-sm">Редактировать</a>
+                                        <a href="{% url 'mailing:message_detail' message.pk %}" type="button"
+                                           class="btn btn-outline-secondary btn-sm">Информация</a>
+                                        <a href="{% url 'mailing:message_delete' message.pk %}" type="button"
+                                           class="btn btn-outline-danger btn-sm">Удалить</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
