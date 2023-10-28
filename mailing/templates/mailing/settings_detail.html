@@ -1,0 +1,79 @@
+{% extends 'mailing/base.html' %}
+{% block content %}
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card mb-3">
+                    <div class="card-header mx-auto">
+                        {% if object.mailing_name %}
+                            <h5 class="card-title">{{ object.mailing_name }}</h5>
+                        {% else %}
+                            <h5 class="card-title">Без названия</h5>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text text-center">
+                            <span class="text-muted">Статус:</span>
+                            <span>{{ object.get_mailing_status_display.lower }}</span>
+                        </p>
+                        <p class="card-text text-center">
+                            <span class="text-muted">Периодичность:</span>
+                            {% if object.periodicity == 'daily' %}
+                                <span>{{ object.get_periodicity_display.lower }}</span>
+                            {% elif object.periodicity == 'weekly' %}
+                                <span>{{ object.get_periodicity_display.lower }}({{ object.get_preferred_weekday_display }})</span>
+                            {% elif object.periodicity == 'monthly' %}
+                                <span>{{ object.get_periodicity_display.lower }}({{ object.get_preferred_day_of_month_display }} день месяца)</span>
+                            {% endif %}
+                        </p>
+                        <p class="card-text text-center">
+                            <span class="text-muted">Время начала отправки:</span>
+                            <span>{{ object.mailing_time_start }}</span>
+                        </p>
+                        <p class="card-text text-center">
+                            <span class="text-muted">Время окончания отправки:</span>
+                            <span>{{ object.mailing_time_end }}</span>
+                        </p>
+                        <p class="card-text text-center">
+                            <span class="text-muted">Сообщение:</span>
+                            <span>{{ object.mailing }}</span>
+                        </p>
+                    </div>
+                    <div class="card-footer d-flex justify-content-center">
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <a href="{% url 'mailing:settings_update' object.pk %}" type="button"
+                               class="btn btn-outline-secondary btn-sm">Редактировать</a>
+                            <a href="{% url 'mailing:settings_delete' object.pk %}" type="button"
+                               class="btn btn-outline-danger btn-sm">Удалить</a>
+                        </div>
+                    </div>
+                    <div class="card-header mx-auto mt-3">
+                        <h5 class="card-title">Журнал логов:</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped text-center">
+                            <thead>
+                            <tr>
+                                <th scope="col">№</th>
+                                <th scope="col">Дата и время последней попытки</th>
+                                <th scope="col">Статус попытки</th>
+                                <th scope="col">Ответ почтового сервера</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for log in object.logs_set.all %}
+                                <tr>
+                                    <th>{{ forloop.counter }}</th>
+                                    <td>{{ log.mailing_time }}</td>
+                                    <td>{{ log.get_mailing_status_display }}</td>
+                                    <td>{{ log.mail_server_response }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
