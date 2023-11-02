@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_crontab',
 
-    'mailing'
+    'mailing',
+    'users',
+    'blog',
 ]
 
 MIDDLEWARE = [
@@ -128,14 +130,18 @@ STATICFILES_DIRS = (
 
 MEDIA_URL = 'media/'
 
-MEDIA_ROOT = (
-    os.path.join(BASE_DIR, 'media'),
-)
+MEDIA_ROOT = BASE_DIR / 'media'
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'users.User'
+LOGOUT_REDIRECT_URL = 'mailing:home_page'
+LOGIN_REDIRECT_URL = 'mailing:settings_list'
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -150,3 +156,13 @@ EMAIL_HOST_PASSWORD = os.getenv('GMAIL_PASS')
 CRONJOBS = [
     ('* * * * *', 'mailing.cron.send_mailing')
 ]
+
+CACHE_ENABLE = os.getenv('CACHES_ENABLE') == 'True'
+
+if CACHE_ENABLE:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": os.getenv('CACHE_LOCATION'),
+        }
+    }
