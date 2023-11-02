@@ -1,14 +1,17 @@
+from django.conf import settings
 from django.db import models
 
 NULLABLE = {'blank': True, 'null': True}
 
 
 class Client(models.Model):
-    email = models.EmailField(unique=True, verbose_name='почта')
+    email = models.EmailField(verbose_name='почта')
     first_name = models.CharField(max_length=50, verbose_name='имя')
     last_name = models.CharField(max_length=50, verbose_name='фамилия')
     surname = models.CharField(max_length=50, **NULLABLE, verbose_name='отчество')
     message = models.TextField(**NULLABLE, verbose_name='комментарий')
+
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='владелец', **NULLABLE)
 
     def __str__(self):
         return f'{self.email}'
@@ -16,11 +19,14 @@ class Client(models.Model):
     class Meta:
         verbose_name = 'клиент'
         verbose_name_plural = 'клиенты'
+        unique_together = [['email', 'owner']]
 
 
 class Message(models.Model):
     mail_subject = models.CharField(max_length=150, verbose_name='тема письма')
     mail_body = models.TextField(verbose_name='тело письма', **NULLABLE)
+
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='владелец', **NULLABLE)
 
     def __str__(self):
         return f'{self.mail_subject}'
@@ -64,6 +70,7 @@ class Settings(models.Model):
 
     mailing = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name='тема и тело рассылки')
     client = models.ManyToManyField(Client, related_name='mailings', verbose_name='клиенты')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='владелец', **NULLABLE)
 
     def __str__(self):
         return f'{self.mailing_name}'

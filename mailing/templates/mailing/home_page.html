@@ -1,5 +1,6 @@
 {% extends 'mailing/base.html' %}
 {% load static %}
+{% load my_tags %}
 {% block content %}
     <div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel" xmlns="http://www.w3.org/1999/html">
         <div class="carousel-indicators">
@@ -16,7 +17,11 @@
                     <div class="carousel-caption text-start">
                         <h1>Работа по всему миру</h1>
                         <p class="opacity-75">Мы работаем со всеми почтовыми сервисами.</p>
-                        <p><a class="btn btn-lg btn-success" href="#">Присоединяйся сегодня</a></p>
+                        {% if not user.is_authenticated %}
+                            <p><a class="btn btn-lg btn-success" href="{% url 'users:login' %}">
+                                Присоединяйся сегодня
+                            </a></p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -76,7 +81,9 @@
                 </svg>
                 <h2 class="fw-normal">Отслеживание статуса рассылки</h2>
                 <p>В личном кабинете легко отслеживать статусы ваших рассылок.</p>
-                <p><a class="btn btn-secondary" href="{% url 'mailing:settings_list' %}">Перейти &raquo;</a></p>
+                {% if user.is_authenticated and perms.mailing.view_settings %}
+                    <p><a class="btn btn-secondary" href="{% url 'mailing:settings_list' %}">Перейти &raquo;</a></p>
+                {% endif %}
             </div><!-- /.col-lg-4 -->
             <div class="col-lg-4">
                 <svg class="bd-placeholder-img rounded-circle" width="140" height="140"
@@ -87,7 +94,9 @@
                 </svg>
                 <h2 class="fw-normal">Быстрое добавление клиентов</h2>
                 <p>Добавляйте ваших клиентов всего в 3 клика.</p>
-                <p><a class="btn btn-secondary" href="{% url 'mailing:client_list' %}">Перейти &raquo;</a></p>
+                {% if user.is_authenticated and perms.mailing.view_client %}
+                    <p><a class="btn btn-secondary" href="{% url 'mailing:client_list' %}">Перейти &raquo;</a></p>
+                {% endif %}
             </div><!-- /.col-lg-4 -->
             <div class="col-lg-4">
                 <svg class="bd-placeholder-img rounded-circle" width="140" height="140"
@@ -98,10 +107,48 @@
                 </svg>
                 <h2 class="fw-normal">Гибкие настройки рассылки</h2>
                 <p>Настраивайте рассылку, исходя из ваших нужд и предпочтений.</p>
-                <p><a class="btn btn-secondary" href="{% url 'mailing:settings_list' %}">Перейти &raquo;</a></p>
+                {% if user.is_authenticated and perms.mailing.view_settings %}
+                    <p><a class="btn btn-secondary" href="{% url 'mailing:settings_list' %}">Перейти &raquo;</a></p>
+                {% endif %}
             </div><!-- /.col-lg-4 -->
         </div><!-- /.row -->
 
+        <div class="col-12 mb-5">
+            <div class="text mt-5"><h5>Новости проекта:</h5></div>
+            <div class="row">
+                {% for blog in blogs %}
+                    {% if blog.is_published %}
+                    <div class="col-12">
+                        <div class="card mt-3 transparent-border">
+                            <h4 class="card-header">{{ blog.title }}</h4>
+                            <div class="row">
+                                <div class="col-5 m-3">
+                                    <img src="{% path_tag blog.photo %}" width=450 height="280" alt=""/>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card-body">
+                                        <p class="card-text">
+                                            {{ blog.body|slice:500 }}...
+                                        </p>
+                                        <p class="card-text">
+                                            {{ blog.published_date }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer d-grid gap-2 d-md-flex justify-content-md-end">
+                                <p>
+                                    <a class="btn btn-secondary" href="{% url 'blog:blog_detail' blog.pk %}">
+                                        Перейти &raquo;
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+        </div>
+    </div>
 
     </div><!-- /.container -->
 {% endblock %}

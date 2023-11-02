@@ -1,0 +1,29 @@
+{% extends 'mailing/base.html' %}
+{% load my_tags %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-12 mt-5">
+                <div class="card mt-3 border-light transparent-border">
+                    <h2 class="card-header text-center">{{ object.title }}</h2>
+                     <p class="card-text small">Просмотры: {{ object.views_count }}</p>
+                    <div class="row">
+                        <div class="col-5 m-4 mx-auto">
+                            <img src="{% path_tag object.photo %}" width=510 height="280" alt=""/>
+                        </div>
+                        <div class="col-12">
+                            <div class="card-body">
+                                <p class="card-text text-center">
+                                    {{ object.body }}
+                                </p>
+                            </div>
+                            <p class="card-text float-right mt-4 mb-5">
+                                {{ object.published_date }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
