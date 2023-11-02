@@ -3,7 +3,11 @@
     <div class="container">
         <div class="row mt-4">
             <div class="col-4">
-                <a href="{% url 'mailing:client_create' %}" class="btn btn-outline-primary mb-3">Добавить клиента</a>
+                {% if perms.mailing.add_client %}
+                    <a href="{% url 'mailing:client_create' %}" class="btn btn-outline-primary mb-3">
+                        Добавить клиента
+                    </a>
+                {% endif %}
             </div>
         </div>
         <div class="row mt-3">
@@ -22,17 +26,21 @@
                 <tbody>
                 {% for object in object_list %}
                     <tr>
-                        <th scope="row">{{ object.pk }}</th>
+                        <th scope="row">{{ forloop.counter }}</th>
                         <td>{{ object.last_name }}</td>
                         <td>{{ object.first_name }}</td>
                         <td>{{ object.surname }}</td>
                         <td>{{ object.email }}</td>
                         <td>{{ object.message }}</td>
                         <td>
-                            <a href="{% url 'mailing:client_update' object.pk %}" type="button"
-                               class="btn btn-outline-primary btn-sm">Изменить</a>
-                            <a href="{% url 'mailing:client_delete' object.pk %}" type="button"
-                               class="btn btn-outline-danger btn-sm">Удалить</a>
+                            {% if perms.mailing.change_client %}
+                                <a href="{% url 'mailing:client_update' object.pk %}" type="button"
+                                   class="btn btn-outline-primary btn-sm">Изменить</a>
+                            {% endif %}
+                            {% if perms.mailing.delete_client %}
+                                <a href="{% url 'mailing:client_delete' object.pk %}" type="button"
+                                   class="btn btn-outline-danger btn-sm">Удалить</a>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
