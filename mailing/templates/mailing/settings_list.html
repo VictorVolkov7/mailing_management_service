@@ -1,15 +1,44 @@
 {% extends 'mailing/base.html' %}
 {% block content %}
     <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card mt-4">
+                    <div class="card-header mx-auto">
+                        <h5 class="card-title">Общая статистика</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table text-center">
+                            <thead>
+                            <tr>
+                                <th>Всего рассылок:</th>
+                                <th>Всего активных рассылок:</th>
+                                <th>Количество уникальных клиентов:</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>{{ mailing_list|length }}</td>
+                                <td>{{ active_mailing.count }}</td>
+                                <td>{{ unique_users.count }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row mt-4">
             <div class="col-8">
                 <div class="col-4">
-                    <a href="{% url 'mailing:settings_create' %}" class="btn btn-outline-primary mb-3">
-                        Добавить рассылку
-                    </a>
+                    {% if perms.mailing.add_settings %}
+                        <a href="{% url 'mailing:settings_create' %}" class="btn btn-outline-primary mb-3">
+                            Добавить рассылку
+                        </a>
+                    {% endif %}
                 </div>
                 <div class="row mt-3">
-                    {% for mailing in mailing_list %}
+                    {% for mailing in mailing_list|dictsort:"mailing_name" %}
                         <div class="col-6">
                             <div class="card mb-3">
                                 <div class="card-header mx-auto">
@@ -48,8 +77,10 @@
                                     </p>
                                 </div>
                                 <div class="card-footer d-flex justify-content-between">
-                                    <a href="{% url 'mailing:settings_detail' mailing.pk %}" type="button"
-                                       class="btn btn-outline-secondary btn-sm">Информация</a>
+                                    {% if perms.mailing.view_settings %}
+                                        <a href="{% url 'mailing:settings_detail' mailing.pk %}" type="button"
+                                           class="btn btn-outline-secondary btn-sm">Информация</a>
+                                    {% endif %}
                                     {% if mailing.mailing_status == 'created' %}
                                         <a href="{% url 'mailing:toggle_activity' mailing.pk %}" type="button"
                                            class="btn btn-outline-success btn-sm">Активировать</a>
@@ -68,9 +99,11 @@
             </div>
             <div class="col-4">
                 <div class="col-12">
-                    <a href="{% url 'mailing:message_create' %}" class="btn btn-outline-primary mb-3">
-                        Добавить сообщение
-                    </a>
+                    {% if perms.mailing.add_message %}
+                        <a href="{% url 'mailing:message_create' %}" class="btn btn-outline-primary mb-3">
+                            Добавить сообщение
+                        </a>
+                    {% endif %}
                 </div>
                 <div class="row mt-3">
                     {% for message in message_list %}
@@ -87,12 +120,18 @@
                                 </div>
                                 <div class="card-footer d-flex justify-content-center">
                                     <div class="btn-group" role="group" aria-label="Basic example">
-                                        <a href="{% url 'mailing:message_update' message.pk %}" type="button"
-                                           class="btn btn-outline-secondary btn-sm">Редактировать</a>
-                                        <a href="{% url 'mailing:message_detail' message.pk %}" type="button"
-                                           class="btn btn-outline-secondary btn-sm">Информация</a>
-                                        <a href="{% url 'mailing:message_delete' message.pk %}" type="button"
-                                           class="btn btn-outline-danger btn-sm">Удалить</a>
+                                        {% if perms.mailing.change_message %}
+                                            <a href="{% url 'mailing:message_update' message.pk %}" type="button"
+                                               class="btn btn-outline-secondary btn-sm">Редактировать</a>
+                                        {% endif %}
+                                        {% if perms.mailing.view_message %}
+                                            <a href="{% url 'mailing:message_detail' message.pk %}" type="button"
+                                               class="btn btn-outline-secondary btn-sm">Информация</a>
+                                        {% endif %}
+                                        {% if perms.mailing.delete_message %}
+                                            <a href="{% url 'mailing:message_delete' message.pk %}" type="button"
+                                               class="btn btn-outline-danger btn-sm">Удалить</a>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
