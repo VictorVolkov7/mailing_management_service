@@ -16,8 +16,11 @@ class PermissionMixin:
 
     def get_object(self, queryset=None):
         self.object = super().get_object(queryset)
-        if self.object.owner != self.request.user:
-            raise Http404
+
+        if not self.request.user.groups.filter(name='manager').exists() and not self.request.user.is_superuser:
+            if self.object.owner != self.request.user:
+                raise Http404
+
         return self.object
 
 
@@ -42,7 +45,11 @@ class SettingsListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(owner=self.request.user)
+        if self.request.user.groups.filter(name='manager').exists() or self.request.user.is_superuser:
+            queryset = queryset.all()
+        else:
+            queryset = queryset.filter(owner=self.request.user)
+
         return queryset
 
     def get_context_data(self, *args, **kwargs):
@@ -54,7 +61,10 @@ class SettingsListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
         context_data['unique_users'] = Client.objects.filter(owner=self.request.user)
 
-        context_data['message_list'] = Message.objects.filter(owner=self.request.user)
+        if self.request.user.groups.filter(name='manager').exists() or self.request.user.is_superuser:
+            context_data['message_list'] = Message.objects.all()
+        else:
+            context_data['message_list'] = Message.objects.filter(owner=self.request.user)
 
         return context_data
 
@@ -79,6 +89,11 @@ class SettingsCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.object = None
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
@@ -131,7 +146,12 @@ class ClientListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(owner=self.request.user)
+
+        if self.request.user.is_superuser:
+            queryset = queryset.all()
+        else:
+            queryset = queryset.filter(owner=self.request.user)
+
         return queryset
 
 

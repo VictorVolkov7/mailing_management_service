@@ -21,6 +21,9 @@
                     <th scope="col">Почта</th>
                     <th scope="col">Комментарий</th>
                     <th scope="col">Действия</th>
+                    {% if user.is_superuser %}
+                        <th scope="col">Владелец</th>
+                    {% endif %}
                 </tr>
                 </thead>
                 <tbody>
@@ -42,6 +45,9 @@
                                    class="btn btn-outline-danger btn-sm">Удалить</a>
                             {% endif %}
                         </td>
+                        {% if user.is_superuser %}
+                            <td>{{ object.owner }}</td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
                 </tbody>

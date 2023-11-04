@@ -11,15 +11,28 @@
                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
                     {% if perms.mailing.view_settings %}
                         <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{% url 'mailing:settings_list' %}">
-                            Мои рассылки
-                        </a>
+                        {% if user.is_staff or user.is_superuser %}
+                            <a class="nav-link active" aria-current="page" href="{% url 'mailing:settings_list' %}">
+                                Все рассылки
+                            </a>
+                        {% else %}
+                            <a class="nav-link active" aria-current="page" href="{% url 'mailing:settings_list' %}">
+                                Мои рассылки
+                            </a>
+                        {% endif %}
                     {% endif %}
                     </li>
                     {% if perms.mailing.view_client %}
                         <li class="nav-item">
                             <a class="nav-link active" href="{% url 'mailing:client_list' %}">
                                 Клиенты
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if perms.users.view_user %}
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'users:users_list' %}">
+                                Пользователи
                             </a>
                         </li>
                     {% endif %}
