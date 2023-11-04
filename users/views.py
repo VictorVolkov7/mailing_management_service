@@ -1,13 +1,15 @@
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import LoginView as BaseLoginView
 from django.contrib.auth.views import LogoutView as BaseLogoutView
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.views.generic import UpdateView, CreateView, TemplateView
+from django.views.generic import UpdateView, CreateView, TemplateView, ListView
 
 from users.forms import LoginForm, ProfileForm, RegisterForm
 from users.models import User
@@ -74,3 +76,24 @@ def verify_email(request, uidb64, token):
         return redirect('mailing:home_page')
     else:
         return redirect('users:login')
+
+
+class UserListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    model = User
+    permission_required = 'users.view_user'
+
+
+@login_required
+def toggle_ban_activity(request, pk):
+    user = get_object_or_404(User, pk=pk)
+
+    if not user.is_banned:
+        user.is_active = False
+        user.is_banned = True
+    else:
+        user.is_active = True
+        user.is_banned = False
+
+    user.save()
+
+    return redirect('users:users_list')
